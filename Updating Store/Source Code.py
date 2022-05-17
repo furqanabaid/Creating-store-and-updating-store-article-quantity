@@ -35,31 +35,30 @@ def updateAllStores():
     files=[i for i in glob.glob('*.{}'.format(extension))]
     for f in files:
         boo=False
+        print(boo,f)
         nfName=storesPath+'/'+f
         unfName=updatedStoresPath+'/'+f
         path=Path(nfName)
         path1=Path(unfName)
         store=pd.read_excel(path)
-        articles=[i for i in store[store.columns[0]]]
-        sku=[i for i in store[store.columns[1]]]
-        qty=[i for i in store[store.columns[2]]]
-        storeSkuAndQtyDict={store.columns[0]:articles,store.columns[1]:sku,store.columns[2]:qty}
-        for idx,l in enumerate(store[store.columns[1]]):
+        sku=[i for i in store[store.columns[0]]]
+        qty=[i for i in store[store.columns[1]]]
+        storeSkuAndQtyDict={store.columns[0]:sku,store.columns[1]:qty}
+        for idx,l in enumerate(store[store.columns[0]]): 
             for indx,saqd in enumerate(skuAndQtyDict[mainFileData.columns[2]]) : 
                 if saqd in l:
-                    print(storeSkuAndQtyDict[store.columns[1]][idx],saqd,idx,skuAndQtyDict[mainFileData.columns[2]][indx])
-                    if (storeSkuAndQtyDict[store.columns[2]][idx]!=skuAndQtyDict[mainFileData.columns[3]][indx] and saqd==storeSkuAndQtyDict[store.columns[1]][idx]):
-                        boo=True
-                        storeSkuAndQtyDict[store.columns[2]][idx]=skuAndQtyDict[mainFileData.columns[3]][indx]
-        df=pd.DataFrame(storeSkuAndQtyDict)         
-        print(boo)
-        
-        
-        if boo:
+                    print(storeSkuAndQtyDict[store.columns[1]][idx],skuAndQtyDict[mainFileData.columns[3]][indx])
+                    if (storeSkuAndQtyDict[store.columns[1]][idx]!=skuAndQtyDict[mainFileData.columns[3]][indx]):
+                        boo= True
+                        print(boo,"x")
+                        storeSkuAndQtyDict[store.columns[1]][idx]=skuAndQtyDict[mainFileData.columns[3]][indx]
+
+        df=pd.DataFrame(storeSkuAndQtyDict)
+        if boo==True:
+            print(df)
             writer = pd.ExcelWriter(path1, engine='xlsxwriter')
             df.to_excel(writer, sheet_name='Sheet1', index=False)
             writer.save()
-            boo=False
     # all stores are updated
     messagebox.showinfo("FT","Stores are updated.")
 window = Tk()
